@@ -1,0 +1,13 @@
+[Unit]
+Description=The Minecraft server
+After=network.target
+
+[Service]
+EnvironmentFile={{ minecraft_env_vars_dir }}/minecraft.conf
+User={{ minecraft_service_user }}
+Group={{ minecraft_service_user }}
+WorkingDirectory={{ minecraft_install_dir }}
+ExecStart=/usr/bin/java -Xms${JAVA_OPTS_XMS} -Xmx${JAVA_OPTS_XMX} -jar {{ minecraft_install_dir }}/minecraft_server_{{ minecraft_version }}.jar nogui
+
+[Install]
+WantedBy=multi-user.target

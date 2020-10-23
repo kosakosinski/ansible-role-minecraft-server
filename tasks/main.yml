@@ -1,0 +1,91 @@
+---
+- name: Update apt caches
+  apt:
+    update_cache: true
+    cache_valid_time: 3600
+  become: true
+
+- name: Install Java 8
+  apt:
+    name: "openjdk-8-jre-headless"
+    state: present
+  become: true
+
+- name: Create {{ minecraft_service_user }} service user/group
+  user:
+    name: "{{ minecraft_service_user }}"
+    shell: /sbin/nologin
+    system: true
+    create_home: false
+  become: true
+
+- name: Create Minecraft installation directory
+  file:
+    path: "{{ minecraft_install_dir }}"
+    state: directory
+    owner: "{{ minecraft_service_user }}"
+    group: "{{ minecraft_service_user }}"
+    mode: 0755
+  become: true
+
+- name: Download Minecraft
+  get_url:
+    url: "{{ minecraft_download_url }}"
+    dest: "{{ minecraft_download_dir }}"
+
+- name: Copy Minecraft jar to intallation directory
+  copy:
+    src: "{{ minecraft_download_dir }}/server.jar"
+    dest: "{{ minecraft_install_dir }}/minecraft_server_{{ minecraft_version }}.jar"
+    remote_src: true
+    owner: "{{ minecraft_service_user }}"
+    group: "{{ minecraft_service_user }}"
+    mode: 0755
+  become: true
+
+- name: Create /etc/minecraft folder for environment variables
+  file:
+    path: /etc/minecraft
+    state: directory
+    owner: "{{ minecraft_service_user }}"
+    group: "{{ minecraft_service_user }}"
+    mode: 0644
+  become: true
+
+- name: Create Minecraft environment variables file
+  template:
+    src: "minecraft.conf.j2"
+    dest: "{{ minecraft_env_vars_dir }}/minecraft.conf"
+    owner: "{{ minecraft_service_user }}"
+    group: "{{ minecraft_service_user }}"
+    mode: 0755
+  become: true
+
+- name: Create Minecraft server service
+  template:
+    src: "minecraft.service.j2"
+    dest: "/etc/systemd/system/minecraft.service"
+    owner: "{{ minecraft_service_user }}"
+    group: "{{ minecraft_service_user }}"
+    mode: 0644
+  become: true
+  notify: reload systemd
+
+- name: Copy Minecraft EULA to server
+  copy:
+    src: "files/eula.txt"
+    dest: "{{ minecraft_install_dir }}/eula.txt"
+    owner: "{{ minecraft_service_user }}"
+    group: "{{ minecraft_service_user }}"
+    mode: 0644
+  become: true
+
+- name: Configure Minecraft server properties
+  template:
+    src: "server.properties.j2"
+    dest: "{{ minecraft_install_dir }}/server.properties"
+    owner: "{{ minecraft_service_user }}"
+    group: "{{ minecraft_service_user }}"
+    mode: 0644
+  become: true
+  notify: restart minecraft
