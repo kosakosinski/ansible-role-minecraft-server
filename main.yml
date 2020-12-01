@@ -2,22 +2,5 @@
 - hosts: all
   gather_facts: true
 
-  handlers:
-    - name: reload systemd
-      systemd:
-        daemon_reload: true
-      become: true
-
-    - name: restart minecraft
-      service:
-        name: minecraft
-        enabled: true
-        state: restarted
-      become: true
-
-  vars_files:
-    - vars/main.yml
-
-  tasks:
-    - name: Include necessary tasks
-      include_tasks: tasks/main.yml
+  roles:
+    - minecraft-server

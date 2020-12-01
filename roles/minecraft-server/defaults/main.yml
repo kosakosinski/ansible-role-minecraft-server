@@ -1,0 +1,32 @@
+---
+  # Download and installation settings
+  minecraft_version: 1.16.3
+  minecraft_download_url: https://launcher.mojang.com/v1/objects/f02f4473dbf152c23d7d484952121db0b36698cb/server.jar
+  minecraft_download_dir: /tmp
+  minecraft_install_dir: /opt/minecraft
+  minecraft_env_vars_dir: /etc/minecraft
+  
+  # Server configuration
+  minecraft_service_user: minecraft
+  minecraft_bind_address: 0.0.0.0
+  minecraft_server_port: 25565
+  minecraft_rcon_port: 25575
+  
+  # Server properties
+  ## Minecraft gamemode choises: survival, creative, adventure, spectator
+  minecraft_gamemode: survival 
+  ## Minecraft difficulty choises: peaceful, easy, normal, hard
+  minecraft_difficulty: normal
+  minecraft_hardcore_mode: false
+  ## Minecraft level type choises: default, flat, largeBiomes, amplified
+  minecraft_level_type: default
+  
+  minecraft_allow_nether: true
+  minecraft_allow_pvp: true
+  minecraft_motd: "A Minecraft Server"
+  
+  #Java opts
+  java_opts:
+    xms: 4G
+    xmx: 6G
+    threads: 6
